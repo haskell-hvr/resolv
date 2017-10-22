@@ -1,3 +1,5 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
 import           Control.Applicative as A
@@ -24,6 +26,7 @@ main = do
                                   , T.testGroup "enc/dec" tests2
                                   , T.testGroup "Type/TypeSym"
                                     [ testTypeToFromSym1, testTypeToFromSym2 ]
+                                  , T.testGroup "mkQueryRaw" [ mkQueryRawText1 ]
                                   ])
 
 testTypeToFromSym1 :: T.TestTree
@@ -66,6 +69,13 @@ msgFileTest2 fn = T.testCase fn $ do
 
     assertEqShow (pure ()) msg0 msg1
 
+mkQueryRawText1 :: T.TestTree
+mkQueryRawText1 = T.testCase "mkQueryRawText1" $ do
+  msgraw <- DNS.mkQueryRaw DNS.classIN (DNS.Name "www.google.com") (DNS.typeFromSym DNS.TypeA)
+
+  let Just msg = DNS.decodeMessage msgraw
+
+  assertEqShow (pure ()) (head (DNS.msgQD msg)) (DNS.MsgQuestion (DNS.Name "www.google.com.") (DNS.Type 1) (DNS.Class 1))
 
 assertJust :: String -> Maybe a -> IO a
 assertJust msg Nothing  = E.throwIO (T.HUnitFailure msg)

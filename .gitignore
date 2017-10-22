@@ -7,3 +7,5 @@
 /config.log
 /config.status
 /autom4te.cache/
+/cbits/hs_resolv_config.h
+/cbits/hs_resolv_config.h.in

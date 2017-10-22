@@ -1,9 +1,18 @@
 #if !defined(HS_RESOLV_H)
 #define HS_RESOLV_H
 
+#include "hs_resolv_config.h"
+
 #include <sys/types.h>
-#include <netinet/in.h>
-#include <arpa/nameser.h>
+
+#if defined(HAVE_NETINET_IN_H)
+# include <netinet/in.h>
+#endif
+
+#if defined(HAVE_ARPA_NAMESER_H)
+# include <arpa/nameser.h>
+#endif
+
 #include <resolv.h>
 
 #include <assert.h>
@@ -13,28 +22,99 @@
 # define QUERY ns_o_query
 #endif
 
+#if HAVE_DECL_RES_NQUERY && HAVE_DECL___RES_STATE && (SIZEOF_STRUCT___RES_STATE > 0)
+
 inline static int
-res_opt_set_use_dnssec(void)
+res_opt_set_use_dnssec(struct __res_state *s)
 {
+  assert(s);
+
+  if (!(s->options & RES_INIT)) {
+    int rc = res_ninit(s);
+    if (rc) return rc;
+  }
+
+  s->options |= RES_USE_DNSSEC | RES_USE_EDNS0;
+
+  return 0;
+}
+
+inline static int
+hs_res_mkquery(struct __res_state *s, const char *dname, int class, int type, unsigned char *req, int reqlen0)
+{
+  assert(s);
+
+  int reqlen = res_nmkquery(s, QUERY, dname, class, type, NULL, 0, NULL, req, reqlen0);
+
+  assert(reqlen <= reqlen0);
+
+  return reqlen;
+}
+
+inline static int
+hs_res_send(struct __res_state *s, const unsigned char *msg, int msglen, unsigned char *answer, int anslen)
+{
+  assert(s);
+
+  return res_nsend(s, msg, msglen, answer, anslen);
+}
+
+inline static int
+hs_res_query(struct __res_state *s, const char *dname, int class, int type, unsigned char *answer, int anslen)
+{
+  assert(s);
+
+  return res_nquery(s, dname, class, type, answer, anslen);
+}
+
+#else
+
+/* use non-reentrant API */
+
+inline static int
+res_opt_set_use_dnssec(void *s)
+{
+  assert(!s);
+
   if (!(_res.options & RES_INIT)) {
     int rc = res_init();
     if (rc) return rc;
   }
 
   _res.options |= RES_USE_DNSSEC | RES_USE_EDNS0;
-    
+
   return 0;
 }
 
 
 inline static int
-hs_res_mkquery(const char *dname, int class, int type, unsigned char *req, int reqlen0)
+hs_res_mkquery(void *s, const char *dname, int class, int type, unsigned char *req, int reqlen0)
 {
+  assert(!s);
+
   int reqlen = res_mkquery(QUERY, dname, class, type, NULL, 0, NULL, req, reqlen0);
 
   assert(reqlen <= reqlen0);
 
   return reqlen;
 }
+
+inline static int
+hs_res_send(void *s, const unsigned char *msg, int msglen, unsigned char *answer, int anslen)
+{
+  assert(!s);
+
+  return res_send(msg, msglen, answer, anslen);
+}
+
+inline static int
+hs_res_query(void *s, const char *dname, int class, int type, unsigned char *answer, int anslen)
+{
+  assert(!s);
+
+  return res_query(dname, class, type, answer, anslen);
+}
+
+#endif
 
 #endif /* HS_RESOLV_H */

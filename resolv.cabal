@@ -1,7 +1,7 @@
 cabal-version:       1.12
 
 name:                resolv
-version:             0.1.0.1
+version:             0.1.1.0
 
 synopsis:            Domain Name Service (DNS) lookup via the libresolv standard library routines
 description: {
@@ -41,16 +41,17 @@ bug-reports:         https://github.com/hvr/resolv/issues
 extra-source-files:  ChangeLog.md
 
 extra-source-files:  cbits/hs_resolv.h
+                     cbits/hs_resolv_config.h.in
                      testdata/msg/*.bin
                      testdata/msg/*.show
                      resolv.buildinfo.in
-                     configure.ac
                      configure
 
 extra-tmp-files:     autom4te.cache
                      config.log
                      config.status
                      resolv.buildinfo
+                     cbits/hs_resolv_config.h
 
 tested-with: GHC==8.2.1, GHC==8.0.2, GHC==7.10.3, GHC==7.8.4, GHC==7.6.3, GHC==7.4.2
 
@@ -75,6 +76,7 @@ library
   hs-source-dirs:    src
   exposed-modules:   Network.DNS
   other-modules:     Network.DNS.Message
+                     Network.DNS.FFI
                      Compat
 
   build-depends:     base              >= 4.5 && <4.11

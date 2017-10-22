@@ -25,6 +25,7 @@ module Network.DNS
     , query
 
       -- * Low-level API
+    , resIsReentrant
     , queryRaw
     , sendRaw
     , mkQueryRaw
@@ -79,37 +80,18 @@ module Network.DNS
     )
     where
 
-import           Control.Concurrent.MVar
 import           Control.Exception
-import           Data.Typeable           (Typeable)
+import           Data.Typeable         (Typeable)
 import           Foreign.C
 import           Foreign.Marshal.Alloc
-import           Foreign.Ptr
 import           Prelude
-import           System.IO.Unsafe        (unsafePerformIO)
 
-import qualified Data.ByteString         as BS
+import qualified Data.ByteString       as BS
 
 import           Compat
 
+import           Network.DNS.FFI
 import           Network.DNS.Message
-
-{-# INLINE isReentrant #-}
--- | Whether the reentrant C API (e.g. @res_nquery(3)@, @res_nsend(3)@) is being used.
---
--- If this this 'False', then as a fall-back
--- @res_query(3)@/@res_send(3)@ are used, protected by a global mutex.
-isReentrant :: Bool
-isReentrant = False
-
-{-# NOINLINE resolvLock #-}
-resolvLock :: MVar ()
-resolvLock = unsafePerformIO $ newMVar ()
-
-withResolvLock :: IO a -> IO a
-withResolvLock act
-  | isReentrant = act
-  | otherwise   = withMVar resolvLock $ \() -> act
 
 -- | Exception thrown in case of errors while encoding or decoding into a 'Msg'.
 data DnsException = DnsEncodeException
@@ -151,17 +133,17 @@ query cls name0 qtype
 --
 -- You can use 'decodeMessage' to decode the response message.
 queryRaw :: Class -> Name -> Type -> IO BS.ByteString
-queryRaw (Class cls) (Name name) qtype = withResolvLock $ do
+queryRaw (Class cls) (Name name) qtype = withCResState $ \stptr -> do
     allocaBytes max_msg_size $ \resptr -> do
         _ <- c_memset resptr 0 max_msg_size
         BS.useAsCString name $ \dn -> do
 
-            rc1 <- c_res_opt_set_use_dnssec
+            rc1 <- c_res_opt_set_use_dnssec stptr
             unless (rc1 == 0) $
                 fail "res_init(3) failed"
 
             resetErrno
-            reslen <- c_res_query dn (fromIntegral cls) qtypeVal resptr max_msg_size
+            reslen <- c_res_query stptr dn (fromIntegral cls) qtypeVal resptr max_msg_size
 
             unless (reslen <= max_msg_size) $
                 fail "res_query(3) message size overflow"
@@ -188,16 +170,16 @@ queryRaw (Class cls) (Name name) qtype = withResolvLock $ do
 
 -- | Send a raw preformatted query via @res_send(3)@.
 sendRaw :: BS.ByteString -> IO BS.ByteString
-sendRaw req = withResolvLock $ do
+sendRaw req = withCResState $ \stptr -> do
     allocaBytes max_msg_size $ \resptr -> do
         _ <- c_memset resptr 0 max_msg_size
         BS.useAsCStringLen req $ \(reqptr,reqlen) -> do
-            rc1 <- c_res_opt_set_use_dnssec
+            rc1 <- c_res_opt_set_use_dnssec stptr
             unless (rc1 == 0) $
                 fail "res_init(3) failed"
 
             resetErrno
-            reslen <- c_res_send reqptr (fromIntegral reqlen) resptr max_msg_size
+            reslen <- c_res_send stptr reqptr (fromIntegral reqlen) resptr max_msg_size
 
             unless (reslen <= max_msg_size) $
                 fail "res_send(3) message size overflow"
@@ -255,17 +237,17 @@ mkQueryMsg cls l qtype = Msg (MsgHeader{..})
 
 -- | Use @res_mkquery(3)@ to construct a DNS query message.
 mkQueryRaw :: Class -> Name -> Type -> IO BS.ByteString
-mkQueryRaw (Class cls) (Name name) qtype = withResolvLock $ do
+mkQueryRaw (Class cls) (Name name) qtype = withCResState $ \stptr -> do
     allocaBytes max_msg_size $ \resptr -> do
         _ <- c_memset resptr 0 max_msg_size
         BS.useAsCString name $ \dn -> do
 
-            rc1 <- c_res_opt_set_use_dnssec
+            rc1 <- c_res_opt_set_use_dnssec stptr
             unless (rc1 == 0) $
                 fail "res_init(3) failed"
 
             resetErrno
-            reslen <- c_res_mkquery dn (fromIntegral cls) qtypeVal resptr max_msg_size
+            reslen <- c_res_mkquery stptr dn (fromIntegral cls) qtypeVal resptr max_msg_size
 
             unless (reslen <= max_msg_size) $
                 fail "res_mkquery(3) message size overflow"
@@ -290,20 +272,6 @@ mkQueryRaw (Class cls) (Name name) qtype = withResolvLock $ do
     qtypeVal :: CInt
     qtypeVal = case qtype of Type w -> fromIntegral w
 
--- int res_query(const char *dname, int class, int type, unsigned char *answer, int anslen);
-foreign import capi safe "resolv.h res_query" c_res_query :: CString -> CInt -> CInt -> Ptr CChar -> CInt -> IO CInt
-
--- int res_send(const unsigned char *msg, int msglen, unsigned char *answer, int anslen);
-foreign import capi safe "resolv.h res_send" c_res_send :: Ptr CChar -> CInt -> Ptr CChar -> CInt -> IO CInt
-
--- void *memset(void *s, int c, size_t n);
-foreign import capi unsafe "string.h memset" c_memset :: Ptr a -> CInt -> CSize -> IO (Ptr a)
-
--- int res_opt_set_use_dnssec(void);
-foreign import capi safe "hs_resolv.h res_opt_set_use_dnssec" c_res_opt_set_use_dnssec :: IO CInt
-
--- int hs_res_mkquery(const char *dname, int class, int type, unsigned char *req, int reqlen0);
-foreign import capi safe "hs_resolv.h hs_res_mkquery" c_res_mkquery :: CString -> CInt -> CInt -> Ptr CChar -> CInt -> IO CInt
 
 ----------------------------------------------------------------------------
 -- Common High-level queries
