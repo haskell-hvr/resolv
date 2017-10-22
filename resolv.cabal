@@ -3,13 +3,14 @@ cabal-version:       1.12
 name:                resolv
 version:             0.1.0.0
 
-synopsis:            Simple DNS resolver using the standard `libresolv` system routines
+synopsis:            Domain Name Service (DNS) lookup via the libresolv standard library routines
 description: {
 
 This package implements an API for accessing
 the [Domain Name Service (DNS)](https://tools.ietf.org/html/rfc1035)
-resolver service via the standard @libresolv@ system library
-on Unix systems.
+resolver service via the standard @libresolv@ system library (whose
+API is often available directly via the standard @libc@ C library) on
+Unix systems.
 .
 This package also includes support for decoding message record types
 as defined in the following RFCs:
@@ -26,7 +27,7 @@ as defined in the following RFCs:
 - [RFC 6844](https://tools.ietf.org/html/rfc6844): DNS Certification Authority Authorization (CAA) Resource Record
 - [RFC 6891](https://tools.ietf.org/html/rfc6891): Extension Mechanisms for DNS (EDNS(0))
 - [RFC 7553](https://tools.ietf.org/html/rfc7553): The Uniform Resource Identifier (URI) DNS Resource Record
-.
+
 }
 
 homepage:            http://github.com/hvr/resolv
