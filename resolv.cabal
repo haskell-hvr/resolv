@@ -43,6 +43,8 @@ extra-source-files:  cbits/hs_resolv.h
                      testdata/msg/*.bin
                      testdata/msg/*.show
 
+tested-with: GHC==8.2.1, GHC==8.0.2, GHC==7.10.3, GHC==7.8.4, GHC==7.6.3, GHC==7.4.2
+
 source-repository head
   type:              git
   location:          https://github.com/hvr/resolv.git
