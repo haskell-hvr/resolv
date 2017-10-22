@@ -18,6 +18,8 @@ import           System.IO.Unsafe        (unsafePerformIO)
 --
 -- If this this 'False', then as a fall-back
 -- @res_query(3)@/@res_send(3)@ are used, protected by a global mutex.
+--
+-- @since 0.1.1.0
 resIsReentrant :: Bool
 #if USE_RES_NQUERY
 resIsReentrant = True

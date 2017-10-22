@@ -23,6 +23,7 @@ module Network.DNS
 
       -- * Mid-level API
     , query
+    , DnsException(..)
 
       -- * Low-level API
     , resIsReentrant
@@ -69,7 +70,7 @@ module Network.DNS
     , Msg(..)
 
     , MsgHeader(..)
-    , MsgHeaderFlags(..)
+    , MsgHeaderFlags(..), QR(..)
     , MsgQuestion(..)
     , MsgRR(..)
 
@@ -94,6 +95,8 @@ import           Network.DNS.FFI
 import           Network.DNS.Message
 
 -- | Exception thrown in case of errors while encoding or decoding into a 'Msg'.
+--
+-- @since 0.1.1.0
 data DnsException = DnsEncodeException
                   | DnsDecodeException
                   deriving (Show, Typeable)

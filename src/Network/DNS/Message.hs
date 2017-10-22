@@ -340,6 +340,9 @@ encodeFlags MsgHeaderFlags{..} =
     (if mhCD then bit  4 else 0) .|.
     (fromIntegral mhRCode)
 
+-- | Encodes whether message is a query or a response
+--
+-- @since 0.1.1.0
 data QR = IsQuery | IsResponse
         deriving (Eq,Read,Show)
 
