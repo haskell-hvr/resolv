@@ -1,7 +1,7 @@
 cabal-version:       1.12
 
 name:                resolv
-version:             0.1.0.0
+version:             0.1.0.1
 
 synopsis:            Domain Name Service (DNS) lookup via the libresolv standard library routines
 description: {
@@ -36,13 +36,21 @@ license-file:        LICENSE
 author:              Herbert Valerio Riedel
 maintainer:          hvr@gnu.org
 category:            Network
-build-type:          Simple
+build-type:          Configure
 bug-reports:         https://github.com/hvr/resolv/issues
 extra-source-files:  ChangeLog.md
 
 extra-source-files:  cbits/hs_resolv.h
                      testdata/msg/*.bin
                      testdata/msg/*.show
+                     resolv.buildinfo.in
+                     configure.ac
+                     configure
+
+extra-tmp-files:     autom4te.cache
+                     config.log
+                     config.status
+                     resolv.buildinfo
 
 tested-with: GHC==8.2.1, GHC==8.0.2, GHC==7.10.3, GHC==7.8.4, GHC==7.6.3, GHC==7.4.2
 
@@ -68,11 +76,6 @@ library
   exposed-modules:   Network.DNS
   other-modules:     Network.DNS.Message
                      Compat
-
-  -- TODO: some operating systems may require this (Linux, FreeBSD, AIX, and OSX do not, as it's included in their respective libc.so)
-  --
-  -- if os(blah)
-  --   extra-libraries: resolv
 
   build-depends:     base              >= 4.5 && <4.11
                    , base16-bytestring == 0.1.*
