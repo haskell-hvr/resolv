@@ -1,5 +1,9 @@
 # Revision history for `resolv`
 
+## 0.1.1.1
+
+* Improve Autoconf script
+
 ## 0.1.1.0
 
 * Use Autoconf to detect which library (if any) to link for `res_query(3)`

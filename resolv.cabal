@@ -1,7 +1,7 @@
 cabal-version:       1.12
 
 name:                resolv
-version:             0.1.1.0
+version:             0.1.1.1
 
 synopsis:            Domain Name Service (DNS) lookup via the libresolv standard library routines
 description: {
@@ -30,7 +30,6 @@ as defined in the following RFCs:
 
 }
 
-homepage:            http://github.com/hvr/resolv
 license:             GPL-3
 license-file:        LICENSE
 author:              Herbert Valerio Riedel

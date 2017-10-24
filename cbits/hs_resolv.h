@@ -22,7 +22,15 @@
 # define QUERY ns_o_query
 #endif
 
-#if HAVE_DECL_RES_NQUERY && HAVE_DECL___RES_STATE && (SIZEOF_STRUCT___RES_STATE > 0)
+#if !defined(USE_RES_NQUERY)
+# error USE_RES_NQUERY not defined
+#endif
+
+#if USE_RES_NQUERY && (SIZEOF_STRUCT___RES_STATE <= 0)
+# error broken invariant
+#endif
+
+#if USE_RES_NQUERY
 
 inline static int
 res_opt_set_use_dnssec(struct __res_state *s)
