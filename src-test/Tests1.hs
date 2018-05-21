@@ -78,7 +78,7 @@ mkQueryRawText1 = T.testCase "mkQueryRawText1" $ do
   assertEqShow (pure ()) (head (DNS.msgQD msg)) (DNS.MsgQuestion (DNS.Name "www.google.com.") (DNS.Type 1) (DNS.Class 1))
 
 assertJust :: String -> Maybe a -> IO a
-assertJust msg Nothing  = E.throwIO (T.HUnitFailure msg)
+assertJust msg Nothing  = T.assertFailure msg
 assertJust _   (Just v) = A.pure v
 
 assertEqShow :: Show a => IO () -> a -> a -> T.Assertion
