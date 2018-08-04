@@ -2,7 +2,7 @@
 
 -- |
 -- Copyright: © 2017 Herbert Valerio Riedel
--- License: GPLv3
+-- SPDX-License-Identifier: GPL-2.0-or-later
 module Compat
     ( toStrict
     , fromStrict

@@ -6,7 +6,7 @@
 
 -- |
 -- Copyright: © 2017 Herbert Valerio Riedel
--- License: GPLv3
+-- SPDX-License-Identifier: GPL-2.0-or-later
 --
 -- This module implements an API for accessing
 -- the [Domain Name Service (DNS)](https://tools.ietf.org/html/rfc1035)
