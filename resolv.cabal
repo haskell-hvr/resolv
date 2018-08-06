@@ -27,7 +27,9 @@ as defined in the following RFCs:
 - [RFC 6844](https://tools.ietf.org/html/rfc6844): DNS Certification Authority Authorization (CAA) Resource Record
 - [RFC 6891](https://tools.ietf.org/html/rfc6891): Extension Mechanisms for DNS (EDNS(0))
 - [RFC 7553](https://tools.ietf.org/html/rfc7553): The Uniform Resource Identifier (URI) DNS Resource Record
-
+.
+For Windows, the package [windns](https://hackage.haskell.org/package/windns)
+provides a compatible subset of this package's API.
 }
 
 X-SPDX-License-Identifier: GPL-2.0-or-later
