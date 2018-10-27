@@ -1,7 +1,7 @@
 cabal-version:       1.12
 
 name:                resolv
-version:             0.1.1.1
+version:             0.1.1.2
 
 synopsis:            Domain Name Service (DNS) lookup via the libresolv standard library routines
 description: {
@@ -34,7 +34,7 @@ provides a compatible subset of this package's API.
 
 X-SPDX-License-Identifier: GPL-2.0-or-later
 license:             GPL-2
-license-files:       LICENSE.GPLv2 LICENSE.GPLv3
+license-files:       LICENSE LICENSE.GPLv2 LICENSE.GPLv3
 author:              Herbert Valerio Riedel
 maintainer:          hvr@gnu.org
 category:            Network
@@ -81,11 +81,11 @@ library
                      Network.DNS.FFI
                      Compat
 
-  build-depends:     base              >= 4.5 && <4.12
+  build-depends:     base              >= 4.5 && <4.13
                    , base16-bytestring == 0.1.*
                    , binary            >= 0.7.3 && < 0.9
                    , bytestring        >= 0.9.2 && < 0.11
-                   , containers        >= 0.4.2.1 && < 0.6
+                   , containers        >= 0.4.2.1 && < 0.7
 
   ghc-options:       -Wall
   include-dirs:      cbits

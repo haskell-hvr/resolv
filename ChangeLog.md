@@ -1,5 +1,9 @@
 # Revision history for `resolv`
 
+## 0.1.1.2
+
+* Clarify/relax licensing terms
+
 ## 0.1.1.1
 
 * Improve Autoconf script
