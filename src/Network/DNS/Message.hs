@@ -93,7 +93,7 @@ instance Read CharStr where
 
 instance Binary CharStr where
     put (CharStr bs)
-      | BS.length bs > 0xff = fail "putString: string too long"
+      | BS.length bs > 0xff = error "putString: string too long"
       | otherwise = do
             putWord8 (fromIntegral $ BS.length bs)
             putByteString bs
@@ -593,7 +593,7 @@ putRData rd = do
         rdataLen = BSL.length rdata
 
     unless (rdataLen < 0x10000) $
-        fail "rdata too large"
+        error "rdata too large"
 
     putWord16be (fromIntegral rdataLen)
     putLazyByteString rdata
@@ -740,7 +740,7 @@ decodeNsecTypeMap = do
 
 encodeNsecTypeMap :: Set Type -> Put
 encodeNsecTypeMap bmap = do
-    when (Set.null bmap) $ fail "invalid empty type-map"
+    when (Set.null bmap) $ error "invalid empty type-map"
     -- when (Set.member 0 bmap) $ fail "invalid TYPE0 set in type-map"
     -- TODO: verify that Meta-TYPES and QTYPEs aren't contained in bmap
 
