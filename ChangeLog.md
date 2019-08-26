@@ -1,4 +1,11 @@
+See also http://pvp.haskell.org/faq
+
 # Revision history for `resolv`
+
+## 0.1.1.3
+
+* GHC 8.8 / base-4.13 only compat hotfix release; the next release will support
+  older GHC/base versions again
 
 ## 0.1.1.2
 
