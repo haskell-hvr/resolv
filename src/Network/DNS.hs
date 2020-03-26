@@ -18,6 +18,7 @@ module Network.DNS
       queryA
     , queryAAAA
     , queryCNAME
+    , queryPTR
     , querySRV
     , queryTXT
 
@@ -50,8 +51,8 @@ module Network.DNS
     , CharStr(..)
 
       -- *** IP addresses
-    , IPv4(..)
-    , IPv6(..)
+    , IPv4(..), arpaIPv4
+    , IPv6(..), arpaIPv6
 
       -- *** RR TTL & Class
     , TTL(..)
@@ -82,12 +83,15 @@ module Network.DNS
     where
 
 import           Control.Exception
+import           Data.Bits             (unsafeShiftR, (.&.))
 import           Data.Typeable         (Typeable)
 import           Foreign.C
 import           Foreign.Marshal.Alloc
+import           Numeric               (showInt)
 import           Prelude
 
 import qualified Data.ByteString       as BS
+import qualified Data.ByteString.Char8 as BSC
 
 import           Compat
 
@@ -347,6 +351,21 @@ queryCNAME n = do
   where
     n' = caseFoldName n
 
+-- | Query @PTR@ records (see [RFC 1035, section 3.3.12](https://tools.ietf.org/html/rfc1035#section-3.3.12)).
+--
+-- >>> queryPTR (Name "4.4.8.8.in-addr.arpa.")
+-- [(TTL 14390,Name "dns.google.")]
+--
+-- See also 'arpaIPv6' and 'arpaIPv4' for converting 'IPv6' and 'IPv4' values to the respective @.arpa."@ domain name for reverse lookups.
+--
+-- @since 0.1.2.0
+queryPTR :: Name -> IO [(TTL,Name)]
+queryPTR n = do
+    res <- query classIN n' TypePTR
+    pure [ (ttl,ptrs) | MsgRR { rrData = RDataPTR ptrs, rrTTL = ttl, rrName = n1, rrClass = Class 1 } <- msgAN res, caseFoldName n1 == n' ]
+  where
+    n' = caseFoldName n
+
 -- | Query @TXT@ records (see [RFC 1035, section 3.3.14](https://tools.ietf.org/html/rfc1035#section-3.3.14)).
 --
 -- >>> queryTXT (Name "_mirrors.hackage.haskell.org")
@@ -371,3 +390,42 @@ querySRV n = do
     pure [ (ttl,srv) | MsgRR { rrData = RDataSRV srv, rrTTL = ttl, rrName = n1, rrClass = Class 1 } <- msgAN res, caseFoldName n1 == n' ]
   where
     n' = caseFoldName n
+
+
+-- | Convert 'IPv4' address to @in-addr.arpa.@ 'Name' (see [RFC 1035, section 3.5](https://tools.ietf.org/html/rfc1035#section-3.5)).
+--
+-- >>> arpaIPv4 (IPv4 0x8080404)
+-- Name "4.4.8.8.in-addr.arpa."
+--
+-- @since 0.1.2.0
+arpaIPv4 :: IPv4 -> Name
+arpaIPv4 (IPv4 w) = Name (BSC.pack s)
+  where
+    s = showInt o0 ('.' : showInt o1 ('.' : showInt o2 ('.' : showInt o3 ".in-addr.arpa.")))
+
+    o0, o1, o2, o3 :: Word8
+    o0 = fromIntegral $ w
+    o1 = fromIntegral $ w `unsafeShiftR` 8
+    o2 = fromIntegral $ w `unsafeShiftR` 16
+    o3 = fromIntegral $ w `unsafeShiftR` 24
+
+-- | Convert 'IPv4' address to @ip6.arpa.@ 'Name' (see [RFC 3596, section 2.5](https://tools.ietf.org/html/rfc3596#section-2.5)).
+--
+-- >>> arpaIPv6 (IPv6 0x2001486048600000 0x8844)
+-- Name "4.4.8.8.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.6.8.4.0.6.8.4.1.0.0.2.ip6.arpa."
+--
+-- @since 0.1.2.0
+arpaIPv6 :: IPv6 -> Name
+arpaIPv6 (IPv6 hi lo) = Name (BSC.pack s)
+  where
+    s = go 16 lo (go 16 hi "ip6.arpa.")
+
+    go :: Int -> Word64 -> ShowS
+    go 0 _ cont = cont
+    go n w cont = nib : '.' : go (n-1) w' cont
+      where
+        nib :: Char
+        nib | x < 10    = toEnum (fromIntegral (0x30 + x))
+            | otherwise = toEnum (fromIntegral (0x57 + x))
+        x = w .&. 0xf
+        w' = w `unsafeShiftR` 4

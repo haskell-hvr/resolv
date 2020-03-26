@@ -2,6 +2,11 @@ See also http://pvp.haskell.org/faq
 
 # Revision history for `resolv`
 
+## 0.1.2.0
+
+* Add new high-level API functions `queryPTR`, `arpaIPv4`, and
+  `arpaIPv6` for performing reverse address lookups.
+
 ## 0.1.1.3
 
 * GHC 8.8 / base-4.13 only compat hotfix release; the next release will support
