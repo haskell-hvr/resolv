@@ -68,3 +68,6 @@ foreign import capi safe "hs_resolv.h res_opt_set_use_dnssec" c_res_opt_set_use_
 -- int hs_res_mkquery(void *, const char *dname, int class, int type, unsigned char *req, int reqlen0);
 foreign import capi safe "hs_resolv.h hs_res_mkquery" c_res_mkquery :: Ptr CResState -> CString -> CInt -> CInt -> Ptr CChar -> CInt -> IO CInt
 
+-- void hs_res_nclose(void *);
+foreign import capi safe "hs_resolv.h hs_res_nclose" c_res_nclose :: Ptr CResState -> IO ()
+

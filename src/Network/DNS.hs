@@ -152,16 +152,21 @@ queryRaw (Class cls) (Name name) qtype = withCResState $ \stptr -> do
             resetErrno
             reslen <- c_res_query stptr dn (fromIntegral cls) qtypeVal resptr max_msg_size
 
-            unless (reslen <= max_msg_size) $
+            unless (reslen <= max_msg_size) $ do
+                c_res_nclose stptr
                 fail "res_query(3) message size overflow"
 
             errno <- getErrno
 
             when (reslen < 0) $ do
-                unless (errno == eOK) $
+                unless (errno == eOK) $ do
+                    c_res_nclose stptr
                     throwErrno "res_query"
 
+                c_res_nclose stptr
                 fail "res_query(3) failed"
+
+            c_res_nclose stptr
 
             BS.packCStringLen (resptr, fromIntegral reslen)
 
@@ -188,16 +193,21 @@ sendRaw req = withCResState $ \stptr -> do
             resetErrno
             reslen <- c_res_send stptr reqptr (fromIntegral reqlen) resptr max_msg_size
 
-            unless (reslen <= max_msg_size) $
+            unless (reslen <= max_msg_size) $ do
+                c_res_nclose stptr
                 fail "res_send(3) message size overflow"
 
             errno <- getErrno
 
             when (reslen < 0) $ do
-                unless (errno == eOK) $
+                unless (errno == eOK) $ do
+                    c_res_nclose stptr
                     throwErrno "res_send"
 
+                c_res_nclose stptr
                 fail "res_send(3) failed"
+
+            c_res_nclose stptr
 
             BS.packCStringLen (resptr, fromIntegral reslen)
 
@@ -256,16 +266,21 @@ mkQueryRaw (Class cls) (Name name) qtype = withCResState $ \stptr -> do
             resetErrno
             reslen <- c_res_mkquery stptr dn (fromIntegral cls) qtypeVal resptr max_msg_size
 
-            unless (reslen <= max_msg_size) $
+            unless (reslen <= max_msg_size) $ do
+                c_res_nclose stptr
                 fail "res_mkquery(3) message size overflow"
 
             errno <- getErrno
 
             when (reslen < 0) $ do
-                unless (errno == eOK) $
+                unless (errno == eOK) $ do
+                    c_res_nclose stptr
                     throwErrno "res_query"
 
+                c_res_nclose stptr
                 fail "res_mkquery(3) failed"
+
+            c_res_nclose stptr
 
             BS.packCStringLen (resptr, fromIntegral reslen)
 
