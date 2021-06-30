@@ -17,6 +17,7 @@ module Network.DNS.Message where
 import qualified Data.ByteString.Base16 as B16
 
 import qualified Data.ByteString        as BS
+import qualified Data.ByteString.Char8  as BS.Char8
 import qualified Data.ByteString.Lazy   as BSL
 import           Data.Function
 import           Data.List              (groupBy)
@@ -83,7 +84,10 @@ newtype Name = Name BS.ByteString
 -- The limit of 255 octets is caused by the encoding which uses by a
 -- prefixed octet denoting the length.
 newtype CharStr = CharStr BS.ByteString
-                deriving (Eq,Ord,IsString)
+                deriving (Eq,Ord)
+
+instance IsString CharStr where
+    fromString = CharStr . BS.Char8.pack
 
 instance Show CharStr where
     showsPrec p (CharStr bs) = showsPrec p bs
@@ -1066,4 +1070,3 @@ SW1A2AA.find.me.uk.	86399	IN	LOC	51 30 12.748 N 0 7 39.611 W 0.00m 0.00m 0.00m 0
 https://tools.ietf.org/html/rfc1876
 
 -}
-
