@@ -1,1 +1,12 @@
+branches: master ci*
+
+distribution: jammy
+  -- jammy (Ubuntu 22.04) needed for autoconf-2.71
+
+ghcup-jobs: True
+  -- hvr ppa does not support jammy
+
+haddock: False
+  -- cabal haddock fails
+
 installed: +all -binary

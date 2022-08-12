@@ -1,8 +1,8 @@
 dnl configure.ac
-AC_PREREQ([2.60])
-AC_INIT([resolv], [0.0], [hvr@gnu.org])
+AC_PREREQ([2.71])
+AC_INIT([resolv],[0.0],[hvr@gnu.org])
 AC_CONFIG_SRCDIR([resolv.cabal])
-AC_CONFIG_HEADER(cbits/hs_resolv_config.h)
+AC_CONFIG_HEADERS([cbits/hs_resolv_config.h])
 
 AC_PROG_CC
 AC_C_CONST
