@@ -4,6 +4,8 @@
 module Network.DNS.FFI where
 
 import           Control.Concurrent.MVar
+import           Control.Monad           (unless)
+import           Control.Exception       (finally)
 import           Foreign.C
 import           Foreign.Marshal.Alloc
 import           Foreign.Ptr
@@ -52,6 +54,14 @@ withCResState act
                          act ptr
   | otherwise = withMVar resolvLock $ \() -> act nullPtr
 
+withCResInit :: Ptr CResState -> IO a -> IO a
+withCResInit stptr act = do
+   rc1 <- c_res_opt_set_use_dnssec stptr
+   unless (rc1 == 0) $
+       fail "res_init(3) failed"
+   resetErrno
+   act `finally` c_res_close stptr
+
 
 -- void *memset(void *s, int c, size_t n);
 foreign import capi unsafe "string.h memset" c_memset :: Ptr a -> CInt -> CSize -> IO (Ptr a)
@@ -68,6 +78,6 @@ foreign import capi safe "hs_resolv.h res_opt_set_use_dnssec" c_res_opt_set_use_
 -- int hs_res_mkquery(void *, const char *dname, int class, int type, unsigned char *req, int reqlen0);
 foreign import capi safe "hs_resolv.h hs_res_mkquery" c_res_mkquery :: Ptr CResState -> CString -> CInt -> CInt -> Ptr CChar -> CInt -> IO CInt
 
--- void hs_res_nclose(void *);
-foreign import capi safe "hs_resolv.h hs_res_nclose" c_res_nclose :: Ptr CResState -> IO ()
+-- void hs_res_close(void *);
+foreign import capi safe "hs_resolv.h hs_res_close" c_res_close :: Ptr CResState -> IO ()
 
