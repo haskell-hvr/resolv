@@ -55,12 +55,12 @@ withCResState act
   | otherwise = withMVar resolvLock $ \() -> act nullPtr
 
 withCResInit :: Ptr CResState -> IO a -> IO a
-withCResInit stptr act = do
-   rc1 <- c_res_opt_set_use_dnssec stptr
-   unless (rc1 == 0) $
-       fail "res_init(3) failed"
-   resetErrno
-   act `finally` c_res_close stptr
+withCResInit stptr act = flip finally (c_res_close stptr) $ do
+     rc1 <- c_res_opt_set_use_dnssec stptr
+     unless (rc1 == 0) $
+         fail "res_init(3) failed"
+     resetErrno
+     act
 
 
 -- void *memset(void *s, int c, size_t n);
