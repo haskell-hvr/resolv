@@ -5,7 +5,7 @@ module Network.DNS.FFI where
 
 import           Control.Concurrent.MVar
 import           Control.Monad           (unless)
-import           Control.Exception       (finally)
+import           Control.Exception       (bracket)
 import           Foreign.C
 import           Foreign.Marshal.Alloc
 import           Foreign.Ptr
@@ -55,12 +55,18 @@ withCResState act
   | otherwise = withMVar resolvLock $ \() -> act nullPtr
 
 withCResInit :: Ptr CResState -> IO a -> IO a
-withCResInit stptr act = flip finally (c_res_close stptr) $ do
-     rc1 <- c_res_opt_set_use_dnssec stptr
-     unless (rc1 == 0) $
-         fail "res_init(3) failed"
-     resetErrno
-     act
+withCResInit stptr act = bracket
+     (do
+         rc1 <- c_res_opt_set_use_dnssec stptr
+         unless (rc1 == 0) $
+             fail "res_init(3) failed"
+         return ()
+     )
+     (const $ c_res_close stptr)
+     (const $ do
+         resetErrno
+         act
+     )
 
 
 -- void *memset(void *s, int c, size_t n);
