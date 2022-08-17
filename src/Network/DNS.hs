@@ -140,27 +140,27 @@ query cls name0 qtype
 --
 -- You can use 'decodeMessage' to decode the response message.
 queryRaw :: Class -> Name -> Type -> IO BS.ByteString
-queryRaw (Class cls) (Name name) qtype = withCResState $ \stptr ->
+queryRaw (Class cls) (Name name) qtype = withCResState $ \stptr -> do
     allocaBytes max_msg_size $ \resptr -> do
         _ <- c_memset resptr 0 max_msg_size
-        BS.useAsCString name $ \dn ->
+        BS.useAsCString name $ \dn -> do
 
-            withCResInit stptr $ do
+          withCResInit stptr $ do
 
-                reslen <- c_res_query stptr dn (fromIntegral cls) qtypeVal resptr max_msg_size
+            reslen <- c_res_query stptr dn (fromIntegral cls) qtypeVal resptr max_msg_size
 
-                unless (reslen <= max_msg_size) $
-                    fail "res_query(3) message size overflow"
+            unless (reslen <= max_msg_size) $
+                fail "res_query(3) message size overflow"
 
-                errno <- getErrno
+            errno <- getErrno
 
-                when (reslen < 0) $ do
-                    unless (errno == eOK) $
-                        throwErrno "res_query"
+            when (reslen < 0) $ do
+                unless (errno == eOK) $
+                    throwErrno "res_query"
 
-                    fail "res_query(3) failed"
+                fail "res_query(3) failed"
 
-                BS.packCStringLen (resptr, fromIntegral reslen)
+            BS.packCStringLen (resptr, fromIntegral reslen)
 
   where
     -- The DNS protocol is inherently 16-bit-offset based; so 64KiB is
@@ -174,27 +174,26 @@ queryRaw (Class cls) (Name name) qtype = withCResState $ \stptr ->
 
 -- | Send a raw preformatted query via @res_send(3)@.
 sendRaw :: BS.ByteString -> IO BS.ByteString
-sendRaw req = withCResState $ \stptr ->
+sendRaw req = withCResState $ \stptr -> do
     allocaBytes max_msg_size $ \resptr -> do
         _ <- c_memset resptr 0 max_msg_size
-        BS.useAsCStringLen req $ \(reqptr,reqlen) ->
+        BS.useAsCStringLen req $ \(reqptr,reqlen) -> do
 
-            withCResInit stptr $ do
+          withCResInit stptr $ do
+            reslen <- c_res_send stptr reqptr (fromIntegral reqlen) resptr max_msg_size
 
-                reslen <- c_res_send stptr reqptr (fromIntegral reqlen) resptr max_msg_size
+            unless (reslen <= max_msg_size) $
+                fail "res_send(3) message size overflow"
 
-                unless (reslen <= max_msg_size) $
-                    fail "res_send(3) message size overflow"
+            errno <- getErrno
 
-                errno <- getErrno
+            when (reslen < 0) $ do
+                unless (errno == eOK) $
+                    throwErrno "res_send"
 
-                when (reslen < 0) $ do
-                    unless (errno == eOK) $
-                        throwErrno "res_send"
+                fail "res_send(3) failed"
 
-                    fail "res_send(3) failed"
-
-                BS.packCStringLen (resptr, fromIntegral reslen)
+            BS.packCStringLen (resptr, fromIntegral reslen)
 
   where
     -- The DNS protocol is inherently 16-bit-offset based; so 64KiB is
@@ -239,27 +238,27 @@ mkQueryMsg cls l qtype = Msg (MsgHeader{..})
 
 -- | Use @res_mkquery(3)@ to construct a DNS query message.
 mkQueryRaw :: Class -> Name -> Type -> IO BS.ByteString
-mkQueryRaw (Class cls) (Name name) qtype = withCResState $ \stptr ->
+mkQueryRaw (Class cls) (Name name) qtype = withCResState $ \stptr -> do
     allocaBytes max_msg_size $ \resptr -> do
         _ <- c_memset resptr 0 max_msg_size
-        BS.useAsCString name $ \dn ->
+        BS.useAsCString name $ \dn -> do
 
-            withCResInit stptr $ do
+          withCResInit stptr $ do
 
-                reslen <- c_res_mkquery stptr dn (fromIntegral cls) qtypeVal resptr max_msg_size
+            reslen <- c_res_mkquery stptr dn (fromIntegral cls) qtypeVal resptr max_msg_size
 
-                unless (reslen <= max_msg_size) $
-                    fail "res_mkquery(3) message size overflow"
+            unless (reslen <= max_msg_size) $
+                fail "res_mkquery(3) message size overflow"
 
-                errno <- getErrno
+            errno <- getErrno
 
-                when (reslen < 0) $ do
-                    unless (errno == eOK) $
-                        throwErrno "res_query"
+            when (reslen < 0) $ do
+                unless (errno == eOK) $
+                    throwErrno "res_query"
 
-                    fail "res_mkquery(3) failed"
+                fail "res_mkquery(3) failed"
 
-                BS.packCStringLen (resptr, fromIntegral reslen)
+            BS.packCStringLen (resptr, fromIntegral reslen)
 
   where
     -- The DNS protocol is inherently 16-bit-offset based; so 64KiB is
