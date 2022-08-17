@@ -55,19 +55,14 @@ withCResState act
   | otherwise = withMVar resolvLock $ \() -> act nullPtr
 
 withCResInit :: Ptr CResState -> IO a -> IO a
-withCResInit stptr act = bracket
-     (do
-         rc1 <- c_res_opt_set_use_dnssec stptr
-         unless (rc1 == 0) $
-             fail "res_init(3) failed"
-         return ()
-     )
-     (const $ c_res_close stptr)
-     (const $ do
-         resetErrno
-         act
-     )
-
+withCResInit stptr act = bracket initialize finalize $ const act
+  where
+    initialize = do
+        rc1 <- c_res_opt_set_use_dnssec stptr
+        unless (rc1 == 0) $
+            fail "res_init(3) failed"
+        resetErrno
+    finalize _ = c_res_close stptr
 
 -- void *memset(void *s, int c, size_t n);
 foreign import capi unsafe "string.h memset" c_memset :: Ptr a -> CInt -> CSize -> IO (Ptr a)
@@ -86,4 +81,3 @@ foreign import capi safe "hs_resolv.h hs_res_mkquery" c_res_mkquery :: Ptr CResS
 
 -- void hs_res_close(void *);
 foreign import capi safe "hs_resolv.h hs_res_close" c_res_close :: Ptr CResState -> IO ()
-
