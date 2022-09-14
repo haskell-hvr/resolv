@@ -98,18 +98,22 @@ import           Compat
 import           Network.DNS.FFI
 import           Network.DNS.Message
 
--- | Exception thrown in case of errors while encoding or decoding into a 'Msg'.
+-- | Exception thrown in case of errors while resolving or encoding/decoding into a 'Msg'.
 --
 -- @since 0.1.1.0
 data DnsException = DnsEncodeException
                   | DnsDecodeException
+                  | DnsHostNotFound -- ^ No such domain (authoritative)
+                  | DnsNoData       -- ^ No record for requested type
+                  | DnsNoRecovery   -- ^ Non recoverable errors, REFUSED, NOTIMP
+                  | DnsTryAgain     -- ^ No such domain (non-authoritative) or SERVERFAIL
                   deriving (Show, Typeable)
 
 instance Exception DnsException
 
 -- | Send a query via @res_query(3)@ and decode its response into a 'Msg'
 --
--- Throws 'DnsException' in case of encoding or decoding errors. May throw other IO exceptions in case of network errors.
+-- Throws 'DnsException' in case of resolving or encoding/decoding errors. May throw other IO exceptions in case of network errors.
 --
 -- === Example
 --
@@ -161,7 +165,13 @@ queryRaw (Class cls) (Name name) qtype = withCResState $ \stptr -> do
                 unless (errno == eOK) $
                     throwErrno "res_query"
 
-                fail "res_query(3) failed"
+                h_errno <- c_get_h_errno
+                case h_errno of
+                  1 -> throw DnsHostNotFound
+                  2 -> throw DnsNoData
+                  3 -> throw DnsNoRecovery
+                  4 -> throw DnsTryAgain
+                  _ -> fail "res_query (3) failed"
 
             BS.packCStringLen (resptr, fromIntegral reslen)
 

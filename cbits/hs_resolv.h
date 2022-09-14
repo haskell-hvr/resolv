@@ -9,6 +9,10 @@
 # include <netinet/in.h>
 #endif
 
+#if defined(HAVE_DECL_H_ERRNO)
+#  include <netdb.h>
+#endif
+
 #if defined(HAVE_ARPA_NAMESER_H)
 # include <arpa/nameser.h>
 #endif
@@ -123,6 +127,27 @@ hs_res_query(void *s, const char *dname, int class, int type, unsigned char *ans
   return res_query(dname, class, type, answer, anslen);
 }
 
+#endif
+
+#if defined(HAVE_DECL_H_ERRNO)
+inline static int
+hs_get_h_errno()
+{
+  switch(h_errno)
+  {
+    case HOST_NOT_FOUND: return 1;
+    case NO_DATA: return 2;
+    case NO_RECOVERY: return 3;
+    case TRY_AGAIN: return 4;
+    default:  return -1;
+  }
+}
+#else
+inline static int
+hs_get_h_errno()
+{
+  return -1;
+}
 #endif
 
 #endif /* HS_RESOLV_H */

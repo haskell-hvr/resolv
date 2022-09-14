@@ -30,6 +30,10 @@ AC_CHECK_DECLS([res_query, res_nquery], [], [], [[
 #include <resolv.h>
 ]])
 
+AC_CHECK_DECLS([h_errno], [], [], [[
+#include <netdb.h>
+]])
+
 dnl ----------------------------------------------------------------------------
 
 RESOLV_SEARCH_LIBS([res_query],[res_query(0,0,0,0,0)],[resolv bind],[EXTRA_LIBS="$EXTRA_LIBS $ac_lib"],[
