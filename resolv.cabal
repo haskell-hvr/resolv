@@ -95,7 +95,7 @@ library
                      Compat
 
   -- we need binary-0.7.3 for isolate
-  build-depends:     base               >= 4.6      && < 4.18
+  build-depends:     base               >= 4.6      && < 5
                        -- bytestring-0.10.0.0 was shipped with GHC 7.6 (base-4.6)
                    , base16-bytestring  >= 0.1      && < 1.1
                    , binary            ^>= 0.7.3    || ^>= 0.8
