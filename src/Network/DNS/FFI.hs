@@ -82,5 +82,5 @@ foreign import capi safe "hs_resolv.h hs_res_mkquery" c_res_mkquery :: Ptr CResS
 -- void hs_res_close(void *);
 foreign import capi safe "hs_resolv.h hs_res_close" c_res_close :: Ptr CResState -> IO ()
 
--- void *hs_get_h_errno(void *s, int c, size_t n);
-foreign import capi unsafe "hs_resolv.h hs_get_h_errno" c_get_h_errno :: IO CInt
+-- void *hs_get_h_errno(void *);
+foreign import capi unsafe "hs_resolv.h hs_get_h_errno" c_get_h_errno :: Ptr CResState -> IO CInt

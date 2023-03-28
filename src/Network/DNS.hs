@@ -162,13 +162,13 @@ queryRaw (Class cls) (Name name) qtype = withCResState $ \stptr -> do
                 unless (errno == eOK) $
                     throwErrno "res_query"
 
-                h_errno <- c_get_h_errno
+                h_errno <- c_get_h_errno stptr
                 case h_errno of
-                  1 -> throw DnsHostNotFound
-                  2 -> throw DnsNoData
-                  3 -> throw DnsNoRecovery
-                  4 -> throw DnsTryAgain
-                  _ -> fail "res_query (3) failed"
+                    1 -> throwIO DnsHostNotFound
+                    2 -> throwIO DnsNoData
+                    3 -> throwIO DnsNoRecovery
+                    4 -> throwIO DnsTryAgain
+                    _ -> fail "res_query(3) failed"
 
             BS.packCStringLen (resptr, fromIntegral reslen)
 

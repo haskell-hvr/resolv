@@ -10,7 +10,7 @@
 #endif
 
 #if defined(HAVE_DECL_H_ERRNO)
-#  include <netdb.h>
+# include <netdb.h>
 #endif
 
 #if defined(HAVE_ARPA_NAMESER_H)
@@ -90,6 +90,48 @@ hs_res_close(struct __res_state *s)
   res_nclose(s);
 }
 
+#if defined(HAVE_STRUCT___RES_STATE_RES_H_ERRNO)
+
+inline static int
+hs_get_h_errno(struct __res_state *s)
+{
+  assert(s);
+
+  switch(s->res_h_errno)
+  {
+    case HOST_NOT_FOUND: return 1;
+    case NO_DATA: return 2;
+    case NO_RECOVERY: return 3;
+    case TRY_AGAIN: return 4;
+    default:  return -1;
+  }
+}
+
+#elif defined(HAVE_DECL_H_ERRNO)
+
+inline static int
+hs_get_h_errno(struct __res_state *s)
+{
+  switch(h_errno)
+  {
+    case HOST_NOT_FOUND: return 1;
+    case NO_DATA: return 2;
+    case NO_RECOVERY: return 3;
+    case TRY_AGAIN: return 4;
+    default:  return -1;
+  }
+}
+
+#else
+
+inline static int
+hs_get_h_errno(struct __res_state *s)
+{
+  return -1;
+}
+
+#endif
+
 #else
 
 /* use non-reentrant API */
@@ -143,11 +185,10 @@ hs_res_close(void *s)
 {
 }
 
-#endif
-
 #if defined(HAVE_DECL_H_ERRNO)
+
 inline static int
-hs_get_h_errno()
+hs_get_h_errno(void *s)
 {
   switch(h_errno)
   {
@@ -158,12 +199,17 @@ hs_get_h_errno()
     default:  return -1;
   }
 }
+
 #else
+
 inline static int
-hs_get_h_errno()
+hs_get_h_errno(void *s)
 {
   return -1;
 }
+
+#endif
+
 #endif
 
 #endif /* HS_RESOLV_H */

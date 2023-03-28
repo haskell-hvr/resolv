@@ -75,6 +75,17 @@ fi
 
 fi
 
+AC_CHECK_MEMBERS([struct __res_state.res_h_errno],[],[],[[
+#include <sys/types.h>
+#ifdef HAVE_NETINET_IN_H
+# include <netinet/in.h>
+#endif
+#ifdef HAVE_ARPA_NAMESER_H
+# include <arpa/nameser.h>
+#endif
+#include <resolv.h>
+]])
+
 AC_MSG_CHECKING([which DNS api to use])
 
 case "x$USE_RES_NQUERY" in
