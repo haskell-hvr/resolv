@@ -145,11 +145,8 @@ queryRaw (Class cls) (Name name) qtype = withCResState $ \stptr -> do
         _ <- c_memset resptr 0 max_msg_size
         BS.useAsCString name $ \dn -> do
 
-            rc1 <- c_res_opt_set_use_dnssec stptr
-            unless (rc1 == 0) $
-                fail "res_init(3) failed"
+          withCResInit stptr $ do
 
-            resetErrno
             reslen <- c_res_query stptr dn (fromIntegral cls) qtypeVal resptr max_msg_size
 
             unless (reslen <= max_msg_size) $
@@ -181,11 +178,8 @@ sendRaw req = withCResState $ \stptr -> do
     allocaBytes max_msg_size $ \resptr -> do
         _ <- c_memset resptr 0 max_msg_size
         BS.useAsCStringLen req $ \(reqptr,reqlen) -> do
-            rc1 <- c_res_opt_set_use_dnssec stptr
-            unless (rc1 == 0) $
-                fail "res_init(3) failed"
 
-            resetErrno
+          withCResInit stptr $ do
             reslen <- c_res_send stptr reqptr (fromIntegral reqlen) resptr max_msg_size
 
             unless (reslen <= max_msg_size) $
@@ -249,11 +243,8 @@ mkQueryRaw (Class cls) (Name name) qtype = withCResState $ \stptr -> do
         _ <- c_memset resptr 0 max_msg_size
         BS.useAsCString name $ \dn -> do
 
-            rc1 <- c_res_opt_set_use_dnssec stptr
-            unless (rc1 == 0) $
-                fail "res_init(3) failed"
+          withCResInit stptr $ do
 
-            resetErrno
             reslen <- c_res_mkquery stptr dn (fromIntegral cls) qtypeVal resptr max_msg_size
 
             unless (reslen <= max_msg_size) $
