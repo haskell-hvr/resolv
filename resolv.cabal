@@ -55,8 +55,9 @@ extra-tmp-files:     autom4te.cache
                      cbits/hs_resolv_config.h
 
 tested-with:
-  GHC == 9.4.1
-  GHC == 9.2.4
+  GHC == 9.6.1
+  GHC == 9.4.4
+  GHC == 9.2.7
   GHC == 9.0.2
   GHC == 8.10.7
   GHC == 8.8.4
@@ -68,7 +69,6 @@ tested-with:
   -- GHC == 7.10.3
   -- GHC == 7.8.4
   -- GHC == 7.6.3
-  -- GHC == 7.4.2
 
 source-repository head
   type:              git
@@ -95,11 +95,14 @@ library
                      Compat
 
   -- we need binary-0.7.3 for isolate
-  build-depends:     base               >= 4.5     && < 4.18
-                   , base16-bytestring  >= 0.1     && < 1.1
-                   , binary            ^>= 0.7.3   || ^>= 0.8
-                   , bytestring         >= 0.9.2   && < 0.12
-                   , containers        ^>= 0.4.2.1 || ^>= 0.5  || ^>= 0.6
+  build-depends:     base               >= 4.6      && < 5
+                       -- bytestring-0.10.0.0 was shipped with GHC 7.6 (base-4.6)
+                   , base16-bytestring  >= 0.1      && < 1.1
+                   , binary            ^>= 0.7.3    || ^>= 0.8
+                   , bytestring         >= 0.10.0.0 && < 0.12
+                       -- instance IsString ByteString exists in its form since bytestring-0.10.0.0
+                       -- see https://github.com/haskell-hvr/resolv/pull/13#issuecomment-1213876161
+                   , containers        ^>= 0.4.2.1  || ^>= 0.5  || ^>= 0.6
 
   ghc-options:       -Wall
   include-dirs:      cbits

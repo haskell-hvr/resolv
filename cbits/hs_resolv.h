@@ -79,6 +79,17 @@ hs_res_query(struct __res_state *s, const char *dname, int class, int type, unsi
   return res_nquery(s, dname, class, type, answer, anslen);
 }
 
+/* res_nclose() finalizes resources allocated by res_ninit() and subsequent
+ * calls to res_nquery() */
+
+inline static void
+hs_res_close(struct __res_state *s)
+{
+  assert(s);
+
+  res_nclose(s);
+}
+
 #else
 
 /* use non-reentrant API */
@@ -125,6 +136,11 @@ hs_res_query(void *s, const char *dname, int class, int type, unsigned char *ans
   assert(!s);
 
   return res_query(dname, class, type, answer, anslen);
+}
+
+inline static void
+hs_res_close(void *s)
+{
 }
 
 #endif

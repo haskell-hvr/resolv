@@ -6,7 +6,4 @@ distribution: jammy
 ghcup-jobs: True
   -- hvr ppa does not support jammy
 
-haddock: False
-  -- cabal haddock fails
-
 installed: +all -binary
