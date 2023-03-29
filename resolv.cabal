@@ -1,7 +1,7 @@
 cabal-version:       2.2
 
 name:                resolv
-version:             0.1.2.0
+version:             0.2.0.0
 
 synopsis:            Domain Name Service (DNS) lookup via the libresolv standard library routines
 description: {
@@ -35,11 +35,11 @@ provides a compatible subset of this package's API.
 license:             GPL-2.0-or-later
 license-files:       LICENSE LICENSE.GPLv2 LICENSE.GPLv3
 author:              Herbert Valerio Riedel
-maintainer:          hvr@gnu.org
+maintainer:          Alexey Radkov
 category:            Network
 build-type:          Configure
 bug-reports:         https://github.com/haskell-hvr/resolv/issues
-extra-source-files:  ChangeLog.md
+extra-doc-files:     ChangeLog.md
 
 extra-source-files:  cbits/hs_resolv.h
                      cbits/hs_resolv_config.h.in
@@ -94,11 +94,11 @@ library
                      Network.DNS.FFI
                      Compat
 
-  -- we need binary-0.7.3 for isolate
   build-depends:     base               >= 4.6      && < 5
                        -- bytestring-0.10.0.0 was shipped with GHC 7.6 (base-4.6)
                    , base16-bytestring  >= 0.1      && < 1.1
                    , binary            ^>= 0.7.3    || ^>= 0.8
+                       -- we need binary-0.7.3 for isolate
                    , bytestring         >= 0.10.0.0 && < 0.12
                        -- instance IsString ByteString exists in its form since bytestring-0.10.0.0
                        -- see https://github.com/haskell-hvr/resolv/pull/13#issuecomment-1213876161
