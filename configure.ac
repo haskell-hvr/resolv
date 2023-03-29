@@ -7,6 +7,10 @@ AC_CONFIG_HEADERS([cbits/hs_resolv_config.h])
 AC_PROG_CC
 AC_C_CONST
 
+dnl ignore options --with-compiler and --with-hc passed by cabal configure
+AC_ARG_WITH([compiler], [], [], [])
+AC_ARG_WITH([hc], [], [], [])
+
 AC_CHECK_HEADERS([netinet/in.h arpa/nameser.h])
 AC_CHECK_HEADER([resolv.h],,AC_MSG_ERROR([required <resolv.h> header not found]),[[
 #include <sys/types.h>
