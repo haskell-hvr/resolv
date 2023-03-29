@@ -101,13 +101,26 @@ import           Network.DNS.Message
 -- | Exception thrown in case of errors while resolving or encoding/decoding into a 'Msg'.
 --
 -- @since 0.1.1.0
-data DnsException = DnsEncodeException
-                  | DnsDecodeException
-                  | DnsHostNotFound -- ^ No such domain (authoritative)
-                  | DnsNoData       -- ^ No record for requested type
-                  | DnsNoRecovery   -- ^ Non recoverable errors, REFUSED, NOTIMP
-                  | DnsTryAgain     -- ^ No such domain (non-authoritative) or SERVERFAIL
-                  deriving (Show, Typeable)
+data DnsException
+  = DnsEncodeException
+  | DnsDecodeException
+  | DnsHostNotFound
+      -- ^ No such domain (authoritative)
+      --
+      -- @since 0.2.0.0
+  | DnsNoData
+      -- ^ No record for requested type
+      --
+      -- @since 0.2.0.0
+  | DnsNoRecovery
+      -- ^ Non recoverable errors, REFUSED, NOTIMP
+      --
+      -- @since 0.2.0.0
+  | DnsTryAgain
+      -- ^ No such domain (non-authoritative) or SERVERFAIL
+      --
+      -- @since 0.2.0.0
+  deriving (Show, Typeable)
 
 instance Exception DnsException
 
