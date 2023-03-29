@@ -4,11 +4,17 @@ See also http://pvp.haskell.org/faq
 
 ## 0.2.0.0
 
-* Bump bytestring to `>= 0.10` for correct `IsString ByteString` instance.
+_2023-03-xx, Alexey Radkov and Andreas Abel_
+
+* Bump `bytestring` to `>= 0.10` for correct `IsString ByteString` instance.
+  (PR [#16](https://github.com/haskell-hvr/resolv/pull/16).)
 * Fix memory leaks due to missing `res_nclose()` after each `res_ninit()` call.
-* Check the value of `h_errno` on falures of `res_nquery()` and throw an
-  appropriate exception.
+  (PR [#12](https://github.com/haskell-hvr/resolv/pull/12).)
+* Check the value of `h_errno` on failures of `res_nquery()` and throw an appropriate exception.
+  (PR [#17](https://github.com/haskell-hvr/resolv/pull/17).)
 * Suppress configure warning on option `--with-compiler` passed by Cabal.
+  (PR [#21](https://github.com/haskell-hvr/resolv/pull/21).)
+* Tested with GHC 8.0 - 9.6.
 
 ## 0.1.2.0
 
