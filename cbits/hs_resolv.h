@@ -90,6 +90,8 @@ hs_res_close(struct __res_state *s)
   res_nclose(s);
 }
 
+#if defined(HAVE_DECL_H_ERRNO)
+
 #if defined(HAVE_STRUCT___RES_STATE_RES_H_ERRNO)
 
 inline static int
@@ -107,7 +109,7 @@ hs_get_h_errno(struct __res_state *s)
   }
 }
 
-#elif defined(HAVE_DECL_H_ERRNO)
+#else
 
 inline static int
 hs_get_h_errno(struct __res_state *s)
@@ -121,6 +123,8 @@ hs_get_h_errno(struct __res_state *s)
     default:  return -1;
   }
 }
+
+#endif
 
 #else
 
