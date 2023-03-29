@@ -101,28 +101,20 @@ hs_res_close(struct __res_state *s)
   res_nclose(s);
 }
 
-#if defined(HAVE_DECL_H_ERRNO)
-
 inline static int
 hs_get_h_errno(struct __res_state *s)
 {
+#if defined(HAVE_DECL_H_ERRNO)
 #if defined(HAVE_STRUCT___RES_STATE_RES_H_ERRNO)
   assert(s);
   __HS_GET_H_ERRNO(s->res_h_errno)
 #else
   __HS_GET_H_ERRNO(h_errno)
 #endif
-}
-
 #else
-
-inline static int
-hs_get_h_errno(struct __res_state *s)
-{
   return -1;
+#endif
 }
-
-#endif /* HAVE_DECL_H_ERRNO */
 
 #else  /* USE_RES_NQUERY */
 
@@ -177,23 +169,15 @@ hs_res_close(void *s)
 {
 }
 
+inline static int
+hs_get_h_errno(void *s)
+{
 #if defined(HAVE_DECL_H_ERRNO)
-
-inline static int
-hs_get_h_errno(void *s)
-{
   __HS_GET_H_ERRNO(h_errno)
-}
-
 #else
-
-inline static int
-hs_get_h_errno(void *s)
-{
   return -1;
+#endif
 }
-
-#endif /* HAVE_DECL_H_ERRNO */
 
 #endif /* USE_RES_NQUERY */
 
