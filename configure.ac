@@ -71,14 +71,6 @@ USE_RES_NQUERY=0
 AC_MSG_WARN([could not figure out which C library contains res_nquery(3)])
 ])
 
-else
-
-AC_MSG_WARN([could not determine sizeof(struct __res_state)])
-
-fi
-
-fi
-
 AC_CHECK_MEMBERS([struct __res_state.res_h_errno],[],[],[[
 #include <sys/types.h>
 #ifdef HAVE_NETINET_IN_H
@@ -89,6 +81,14 @@ AC_CHECK_MEMBERS([struct __res_state.res_h_errno],[],[],[[
 #endif
 #include <resolv.h>
 ]])
+
+else
+
+AC_MSG_WARN([could not determine sizeof(struct __res_state)])
+
+fi
+
+fi
 
 AC_MSG_CHECKING([which DNS api to use])
 
