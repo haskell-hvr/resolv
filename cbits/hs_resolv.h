@@ -34,6 +34,17 @@
 # error broken invariant
 #endif
 
+/* Macro to calculate error code returned by hs_get_h_errno */
+#define __HS_GET_H_ERRNO(h_errno)    \
+  switch(h_errno)                    \
+  {                                  \
+    case HOST_NOT_FOUND: return 1;   \
+    case NO_DATA:        return 2;   \
+    case NO_RECOVERY:    return 3;   \
+    case TRY_AGAIN:      return 4;   \
+    default:             return -1;  \
+  }
+
 #if USE_RES_NQUERY
 
 inline static int
@@ -92,39 +103,16 @@ hs_res_close(struct __res_state *s)
 
 #if defined(HAVE_DECL_H_ERRNO)
 
+inline static int
+hs_get_h_errno(struct __res_state *s)
+{
 #if defined(HAVE_STRUCT___RES_STATE_RES_H_ERRNO)
-
-inline static int
-hs_get_h_errno(struct __res_state *s)
-{
   assert(s);
-
-  switch(s->res_h_errno)
-  {
-    case HOST_NOT_FOUND: return 1;
-    case NO_DATA: return 2;
-    case NO_RECOVERY: return 3;
-    case TRY_AGAIN: return 4;
-    default:  return -1;
-  }
-}
-
+  __HS_GET_H_ERRNO(s->res_h_errno)
 #else
-
-inline static int
-hs_get_h_errno(struct __res_state *s)
-{
-  switch(h_errno)
-  {
-    case HOST_NOT_FOUND: return 1;
-    case NO_DATA: return 2;
-    case NO_RECOVERY: return 3;
-    case TRY_AGAIN: return 4;
-    default:  return -1;
-  }
-}
-
+  __HS_GET_H_ERRNO(h_errno)
 #endif
+}
 
 #else
 
@@ -134,9 +122,9 @@ hs_get_h_errno(struct __res_state *s)
   return -1;
 }
 
-#endif
+#endif /* HAVE_DECL_H_ERRNO */
 
-#else
+#else  /* USE_RES_NQUERY */
 
 /* use non-reentrant API */
 
@@ -194,14 +182,7 @@ hs_res_close(void *s)
 inline static int
 hs_get_h_errno(void *s)
 {
-  switch(h_errno)
-  {
-    case HOST_NOT_FOUND: return 1;
-    case NO_DATA: return 2;
-    case NO_RECOVERY: return 3;
-    case TRY_AGAIN: return 4;
-    default:  return -1;
-  }
+  __HS_GET_H_ERRNO(h_errno)
 }
 
 #else
@@ -212,8 +193,8 @@ hs_get_h_errno(void *s)
   return -1;
 }
 
-#endif
+#endif /* HAVE_DECL_H_ERRNO */
 
-#endif
+#endif /* USE_RES_NQUERY */
 
 #endif /* HS_RESOLV_H */
