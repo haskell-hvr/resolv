@@ -2,6 +2,14 @@ See also http://pvp.haskell.org/faq
 
 # Revision history for `resolv`
 
+## 0.2.0.0
+
+* Bump bytestring to `>= 0.10` for correct `IsString ByteString` instance.
+* Fix memory leaks due to missing `res_nclose()` after each `res_ninit()` call.
+* Check the value of `h_errno` on falures of `res_nquery()` and throw an
+  appropriate exception.
+* Suppress configure warning on option `--with-compiler` passed by Cabal.
+
 ## 0.1.2.0
 
 * Add new high-level API functions `queryPTR`, `arpaIPv4`, and
