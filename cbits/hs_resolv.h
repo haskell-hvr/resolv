@@ -42,6 +42,7 @@
     case NO_DATA:        return 2;   \
     case NO_RECOVERY:    return 3;   \
     case TRY_AGAIN:      return 4;   \
+    case 0:              return 0;   \
     default:             return -1;  \
   }
 
