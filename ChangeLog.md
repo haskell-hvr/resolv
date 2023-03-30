@@ -10,7 +10,10 @@ _2023-03-xx, Alexey Radkov and Andreas Abel_
   (PR [#16](https://github.com/haskell-hvr/resolv/pull/16).)
 * Fix memory leaks due to missing `res_nclose()` after each `res_ninit()` call.
   (PR [#12](https://github.com/haskell-hvr/resolv/pull/12).)
-* Check the value of `h_errno` on failures of `res_nquery()` and throw an appropriate exception.
+* Check the value of `h_errno` on failures of `res_nquery()` and throw an
+  appropriate exception of type `DnsException` built with one of new
+  constructors `DnsHostNotFound`, `DnsNoData`, `DnsNoRecovery`, or `DnsTryAgain`.
+  Note that previously such exceptions were thrown by `fail` and had type `IOError`.
   (PR [#17](https://github.com/haskell-hvr/resolv/pull/17).)
 * Suppress configure warning on option `--with-compiler` passed by Cabal.
   (PR [#21](https://github.com/haskell-hvr/resolv/pull/21).)
