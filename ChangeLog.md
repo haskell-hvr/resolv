@@ -4,7 +4,7 @@ See also http://pvp.haskell.org/faq
 
 ## 0.2.0.0
 
-_2023-03-30, Alexey Radkov and Andreas Abel_
+_2023-03-31, Alexey Radkov and Andreas Abel_
 
 * Bump `bytestring` to `>= 0.10` for correct `IsString ByteString` instance.
   (PR [#16](https://github.com/haskell-hvr/resolv/pull/16).)
