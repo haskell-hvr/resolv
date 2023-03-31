@@ -2,6 +2,12 @@ See also http://pvp.haskell.org/faq
 
 # Revision history for `resolv`
 
+## 0.2.0.1
+
+_2023-03-31, Alexey Radkov and Andreas Abel_
+
+* Fix 0.2.0.0: Ship updated `configure` script.
+
 ## 0.2.0.0
 
 _2023-03-31, Alexey Radkov and Andreas Abel_
