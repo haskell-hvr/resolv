@@ -40,7 +40,7 @@ AC_CHECK_DECLS([h_errno], [], [], [[
 
 dnl ----------------------------------------------------------------------------
 
-RESOLV_SEARCH_LIBS([res_query],[res_query(0,0,0,0,0)],[resolv bind],[EXTRA_LIBS="$EXTRA_LIBS $ac_lib"],[
+RESOLV_SEARCH_LIBS([res_query],[res_query(0,0,0,0,0)],[resolv bind network],[EXTRA_LIBS="$EXTRA_LIBS $ac_lib"],[
 AC_MSG_ERROR([could not figure out which C library contains res_query(3)])
 ])
 
