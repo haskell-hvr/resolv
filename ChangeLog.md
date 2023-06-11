@@ -2,6 +2,13 @@ See also http://pvp.haskell.org/faq
 
 # Revision history for `resolv`
 
+## 0.2.0.2
+
+_2023-06-12, Alexey Radkov and Andreas Abel_
+
+* Support Haiku OS by including `libnetwork` in configure script.
+  (PR [#23](https://github.com/haskell-hvr/resolv/pull/23).)
+
 ## 0.2.0.1
 
 _2023-03-31, Alexey Radkov and Andreas Abel_
