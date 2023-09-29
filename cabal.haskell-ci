@@ -7,3 +7,14 @@ ghcup-jobs: True
   -- hvr ppa does not support jammy
 
 installed: +all -binary
+
+-- Test core libraries in versions newer than shipped with GHC
+constraint-set latest-core-libs-Sep-2023
+  constraints: bytestring >= 0.12
+  constraints: containers >= 0.7
+  ghc: >= 8.2 && < 9.7
+  tests: True
+  run-tests: True
+
+raw-project
+  allow-newer: bytestring
