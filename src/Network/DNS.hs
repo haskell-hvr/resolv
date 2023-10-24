@@ -120,7 +120,7 @@ data DnsException
       -- ^ No such domain (non-authoritative) or SERVERFAIL
       --
       -- @since 0.2.0.0
-  deriving (Show, Typeable)
+  deriving (Eq, Show, Typeable)
 
 instance Exception DnsException
 
