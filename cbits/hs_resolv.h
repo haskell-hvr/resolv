@@ -9,6 +9,10 @@
 # include <netinet/in.h>
 #endif
 
+#if defined(HAVE_DECL_H_ERRNO)
+# include <netdb.h>
+#endif
+
 #if defined(HAVE_ARPA_NAMESER_H)
 # include <arpa/nameser.h>
 #endif
@@ -29,6 +33,18 @@
 #if USE_RES_NQUERY && (SIZEOF_STRUCT___RES_STATE <= 0)
 # error broken invariant
 #endif
+
+/* Macro to calculate error code returned by hs_get_h_errno */
+#define __HS_GET_H_ERRNO(h_errno)    \
+  switch(h_errno)                    \
+  {                                  \
+    case HOST_NOT_FOUND: return 1;   \
+    case NO_DATA:        return 2;   \
+    case NO_RECOVERY:    return 3;   \
+    case TRY_AGAIN:      return 4;   \
+    case 0:              return 0;   \
+    default:             return -1;  \
+  }
 
 #if USE_RES_NQUERY
 
@@ -86,7 +102,22 @@ hs_res_close(struct __res_state *s)
   res_nclose(s);
 }
 
+inline static int
+hs_get_h_errno(struct __res_state *s)
+{
+#if defined(HAVE_DECL_H_ERRNO)
+#if defined(HAVE_STRUCT___RES_STATE_RES_H_ERRNO)
+  assert(s);
+  __HS_GET_H_ERRNO(s->res_h_errno)
 #else
+  __HS_GET_H_ERRNO(h_errno)
+#endif
+#else
+  return -1;
+#endif
+}
+
+#else  /* USE_RES_NQUERY */
 
 /* use non-reentrant API */
 
@@ -139,6 +170,16 @@ hs_res_close(void *s)
 {
 }
 
+inline static int
+hs_get_h_errno(void *s)
+{
+#if defined(HAVE_DECL_H_ERRNO)
+  __HS_GET_H_ERRNO(h_errno)
+#else
+  return -1;
 #endif
+}
+
+#endif /* USE_RES_NQUERY */
 
 #endif /* HS_RESOLV_H */

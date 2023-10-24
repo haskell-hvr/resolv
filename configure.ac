@@ -34,9 +34,13 @@ AC_CHECK_DECLS([res_query, res_nquery], [], [], [[
 #include <resolv.h>
 ]])
 
+AC_CHECK_DECLS([h_errno], [], [], [[
+#include <netdb.h>
+]])
+
 dnl ----------------------------------------------------------------------------
 
-RESOLV_SEARCH_LIBS([res_query],[res_query(0,0,0,0,0)],[resolv bind],[EXTRA_LIBS="$EXTRA_LIBS $ac_lib"],[
+RESOLV_SEARCH_LIBS([res_query],[res_query(0,0,0,0,0)],[resolv bind network],[EXTRA_LIBS="$EXTRA_LIBS $ac_lib"],[
 AC_MSG_ERROR([could not figure out which C library contains res_query(3)])
 ])
 
@@ -66,6 +70,17 @@ RESOLV_SEARCH_LIBS([res_nquery],[res_nquery(0,0,0,0,0,0)],[resolv bind],[[EXTRA_
 USE_RES_NQUERY=0
 AC_MSG_WARN([could not figure out which C library contains res_nquery(3)])
 ])
+
+AC_CHECK_MEMBERS([struct __res_state.res_h_errno],[],[],[[
+#include <sys/types.h>
+#ifdef HAVE_NETINET_IN_H
+# include <netinet/in.h>
+#endif
+#ifdef HAVE_ARPA_NAMESER_H
+# include <arpa/nameser.h>
+#endif
+#include <resolv.h>
+]])
 
 else
 
