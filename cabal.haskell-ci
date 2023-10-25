@@ -9,12 +9,11 @@ ghcup-jobs: True
 installed: +all -binary
 
 -- Test core libraries in versions newer than shipped with GHC
-constraint-set latest-core-libs-Sep-2023
-  constraints: bytestring >= 0.12
+constraint-set containers-0.7
   constraints: containers >= 0.7
-  ghc: >= 8.2 && < 9.7
+  ghc: >= 8.2
   tests: True
   run-tests: True
 
 raw-project
-  allow-newer: bytestring
+  allow-newer: containers
