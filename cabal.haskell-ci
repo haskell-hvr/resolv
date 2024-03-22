@@ -8,12 +8,12 @@ ghcup-jobs: True
 
 installed: +all -binary
 
--- Test core libraries in versions newer than shipped with GHC
-constraint-set containers-0.7
-  constraints: containers >= 0.7
-  ghc: >= 8.2
-  tests: True
-  run-tests: True
-
-raw-project
-  allow-newer: containers
+-- -- Test core libraries in versions newer than shipped with GHC
+-- constraint-set containers-0.7
+--   constraints: containers >= 0.7
+--   ghc: >= 8.2
+--   tests: True
+--   run-tests: True
+--
+-- raw-project
+--   allow-newer: containers
