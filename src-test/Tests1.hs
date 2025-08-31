@@ -1,4 +1,9 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
+
+#if __GLASGOW_HASKELL__ >= 900
+{-# OPTIONS_GHC -Wno-incomplete-uni-patterns #-}
+#endif
 
 module Main where
 
@@ -87,5 +92,3 @@ assertEqShow onFail ref cur
         onFail
         T.assertFailure ("expected: " ++ show ref ++ "\n but got: " ++ show cur)
   | otherwise = A.pure ()
-
-

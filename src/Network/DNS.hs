@@ -1,5 +1,4 @@
 {-# LANGUAGE CApiFFI            #-}
-{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings  #-}
 {-# LANGUAGE RecordWildCards    #-}
 {-# LANGUAGE Trustworthy        #-}
@@ -84,7 +83,6 @@ module Network.DNS
 
 import           Control.Exception
 import           Data.Bits             (unsafeShiftR, (.&.))
-import           Data.Typeable         (Typeable)
 import           Foreign.C
 import           Foreign.Marshal.Alloc
 import           Numeric               (showInt)
@@ -120,7 +118,7 @@ data DnsException
       -- ^ No such domain (non-authoritative) or SERVERFAIL
       --
       -- @since 0.2.0.0
-  deriving (Eq, Show, Typeable)
+  deriving (Eq, Show)
 
 instance Exception DnsException
 

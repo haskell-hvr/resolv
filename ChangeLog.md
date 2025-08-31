@@ -2,6 +2,13 @@ See also http://pvp.haskell.org/faq
 
 # Revision history for `resolv`
 
+## 0.2.0.3
+
+_2025-08-31, Andreas Abel_
+
+* Drop support for GHC 7
+* Tested with GHC 8.0 - 9.14 alpha1
+
 ## 0.2.0.2
 
 _2023-06-12, Alexey Radkov and Andreas Abel_
